@@ -4,6 +4,9 @@ import ru.yandex.practicum.model.hub.HubEvent;
 import ru.yandex.practicum.model.sensor.SensorEvent;
 import org.springframework.stereotype.Service;
 
+// реализовать AdviceController
+// привести enum в соответствие с avdl
+
 @Service
 public class ServiceEventImpl implements ServiceEvent {
     @Override
