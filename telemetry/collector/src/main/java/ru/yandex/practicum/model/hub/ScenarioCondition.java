@@ -10,7 +10,7 @@ import ru.yandex.practicum.model.sensor.SensorEventType;
 @ToString(callSuper = true)
 public class ScenarioCondition {
     private String sensorId;
-    private SensorEventType type;
-    private Operation operation;
+    private ConditionType type;
+    private ConditionOperation operation;
     private Integer value;
 }

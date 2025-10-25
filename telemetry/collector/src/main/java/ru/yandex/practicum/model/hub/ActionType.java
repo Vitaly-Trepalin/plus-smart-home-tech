@@ -1,6 +1,6 @@
 package ru.yandex.practicum.model.hub;
 
-public enum Action {
+public enum ActionType {
     ACTIVATE,
     DEACTIVATE,
     INVERSE,
