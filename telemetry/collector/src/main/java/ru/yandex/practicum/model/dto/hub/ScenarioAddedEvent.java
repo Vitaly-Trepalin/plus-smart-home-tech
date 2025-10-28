@@ -20,7 +20,7 @@ public class ScenarioAddedEvent extends HubEvent {
     @NotNull(message = "Список условий, которые связаны со сценарием. Не может быть пустым.")
     private List<ScenarioCondition> conditions;
     @NotNull(message = "Список действий, которые должны быть выполнены в рамках сценария. Не может быть пустым.")
-    private List<DeviceAction> action;
+    private List<DeviceAction> actions;
 
     @Override
     public HubEventType getType() {

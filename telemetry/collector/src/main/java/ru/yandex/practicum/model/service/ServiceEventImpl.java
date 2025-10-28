@@ -122,7 +122,7 @@ public class ServiceEventImpl implements ServiceEvent {
                                 new ScenarioAddedEventAvro(
                                         scenarioAddedEvent.getName(),
                                         Mapper.mapToScenarioConditionAvro(scenarioAddedEvent.getConditions()),
-                                        Mapper.mapToDeviceActionAvro(scenarioAddedEvent.getAction())
+                                        Mapper.mapToDeviceActionAvro(scenarioAddedEvent.getActions())
                                 )
                         )
                 );
