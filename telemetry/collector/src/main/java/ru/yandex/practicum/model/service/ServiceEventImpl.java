@@ -51,7 +51,7 @@ public class ServiceEventImpl implements ServiceEvent {
                         Instant.now().toEpochMilli(), sensorName,
                         new SensorEventAvro(sensorEvent.getId(), sensorEvent.getHubId(), sensorEvent.getTimestamp(),
                                 new LightSensorAvro(lightSensorEvent.getLinkQuality(),
-                                        lightSensorEvent.getLinkQuality())));
+                                        lightSensorEvent.getLuminosity())));
             }
             case "ClimateSensorEvent" -> {
                 ClimateSensorEvent climateSensorEvent = (ClimateSensorEvent) sensorEvent;
@@ -61,7 +61,7 @@ public class ServiceEventImpl implements ServiceEvent {
                                 new ClimateSensorAvro(climateSensorEvent.getTemperatureC(),
                                         climateSensorEvent.getHumidity(), climateSensorEvent.getCo2Level())));
             }
-            case "MotionSensorEvent " -> {
+            case "MotionSensorEvent" -> {
                 MotionSensorEvent motionSensorEvent = (MotionSensorEvent) sensorEvent;
                 yield new ProducerRecord<>(CollectorTopics.TELEMETRY_SENSORS_V1, null,
                         Instant.now().toEpochMilli(), sensorName,
