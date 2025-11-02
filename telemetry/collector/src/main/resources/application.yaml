@@ -4,3 +4,6 @@ spring:
     producer:
       key.serializer: org.apache.kafka.common.serialization.StringSerializer
       value.serializer: ru.yandex.practicum.model.producer.CollectorSerializer
+grpc:
+  server:
+    port: 9090
