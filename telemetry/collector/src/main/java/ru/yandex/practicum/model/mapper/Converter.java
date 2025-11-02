@@ -10,14 +10,14 @@ import ru.yandex.practicum.kafka.telemetry.event.ConditionTypeAvro;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceTypeAvro;
 
 public class Converter {
-    public static DeviceTypeAvro mapToAvro(DeviceTypeProto deviceType) {
+    public static DeviceTypeAvro mapToDeviceTypeAvro(DeviceTypeProto deviceType) {
         return switch (deviceType) {
             case DeviceTypeProto.CLIMATE_SENSOR -> DeviceTypeAvro.CLIMATE_SENSOR;
             case DeviceTypeProto.LIGHT_SENSOR -> DeviceTypeAvro.LIGHT_SENSOR;
             case DeviceTypeProto.MOTION_SENSOR -> DeviceTypeAvro.MOTION_SENSOR;
             case DeviceTypeProto.SWITCH_SENSOR -> DeviceTypeAvro.SWITCH_SENSOR;
             case DeviceTypeProto.TEMPERATURE_SENSOR -> DeviceTypeAvro.TEMPERATURE_SENSOR;
-            case DeviceTypeProto.UNRECOGNIZED -> throw new IllegalArgumentException("Нет такого типа ");
+            case DeviceTypeProto.UNRECOGNIZED -> throw new IllegalArgumentException("Нет такого типа устройств");
         };
     }
 
@@ -29,7 +29,7 @@ public class Converter {
             case ConditionTypeProto.MOTION -> ConditionTypeAvro.MOTION;
             case ConditionTypeProto.SWITCH -> ConditionTypeAvro.SWITCH;
             case ConditionTypeProto.TEMPERATURE -> ConditionTypeAvro.TEMPERATURE;
-            case ConditionTypeProto.UNRECOGNIZED -> throw new IllegalArgumentException("Нет такого типа ");
+            case ConditionTypeProto.UNRECOGNIZED -> throw new IllegalArgumentException("Нет такого типа условия");
         };
     }
 
@@ -38,7 +38,8 @@ public class Converter {
             case ConditionOperationProto.EQUALS -> ConditionOperationAvro.EQUALS;
             case ConditionOperationProto.GREATER_THAN -> ConditionOperationAvro.GREATER_THAN;
             case ConditionOperationProto.LOWER_THAN -> ConditionOperationAvro.LOWER_THAN;
-            case ConditionOperationProto.UNRECOGNIZED -> throw new IllegalArgumentException("Нет такого типа ");
+            case ConditionOperationProto.UNRECOGNIZED ->
+                    throw new IllegalArgumentException("Нет такого типа оператора");
         };
     }
 
@@ -48,7 +49,7 @@ public class Converter {
             case ActionTypeProto.DEACTIVATE -> ActionTypeAvro.DEACTIVATE;
             case ActionTypeProto.INVERSE -> ActionTypeAvro.INVERSE;
             case ActionTypeProto.SET_VALUE -> ActionTypeAvro.SET_VALUE;
-            case ActionTypeProto.UNRECOGNIZED -> throw new IllegalArgumentException("Нет такого типа ");
+            case ActionTypeProto.UNRECOGNIZED -> throw new IllegalArgumentException("Нет такого типа действия");
         };
     }
 }
