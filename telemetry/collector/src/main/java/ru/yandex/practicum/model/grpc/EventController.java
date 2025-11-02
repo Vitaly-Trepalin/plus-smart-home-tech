@@ -149,6 +149,7 @@ public class EventController extends CollectorControllerGrpc.CollectorController
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (Exception e) {
+            log.warn(e.getLocalizedMessage());
             responseObserver.onError(new StatusRuntimeException(
                     Status.INTERNAL
                             .withDescription(e.getLocalizedMessage())
@@ -239,11 +240,11 @@ public class EventController extends CollectorControllerGrpc.CollectorController
                 case PAYLOAD_NOT_SET -> throw new IllegalArgumentException("Нет события хаба");
             };
 
-
             producer.getProducer().send(record);
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (Exception e) {
+            log.warn(e.getLocalizedMessage());
             responseObserver.onError(new StatusRuntimeException(
                     Status.INTERNAL
                             .withDescription(e.getLocalizedMessage())

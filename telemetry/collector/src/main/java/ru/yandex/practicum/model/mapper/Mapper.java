@@ -15,7 +15,7 @@ public class Mapper {
                         scenarioCondition.getSensorId(),
                         Converter.mapToConditionTypeAvro(scenarioCondition.getType()),
                         Converter.mapToConditionOperationAvro(scenarioCondition.getOperation()),
-                        scenarioCondition.getIntValue()
+                        getValueScenarioCondition(scenarioCondition)
                 ))
                 .toList();
     }
@@ -25,8 +25,26 @@ public class Mapper {
                 .map(deviceAction -> new DeviceActionAvro(
                         deviceAction.getSensorId(),
                         Converter.mapToActionTypeAvro(deviceAction.getType()),
-                        deviceAction.getValue()
+                        getValueDeviceAction(deviceAction)
                 ))
                 .toList();
+    }
+
+    private static Object getValueScenarioCondition(ScenarioConditionProto scenarioConditionProto) {
+        if (scenarioConditionProto.hasBoolValue()) {
+            return scenarioConditionProto.getBoolValue();
+        } else if (scenarioConditionProto.hasIntValue()) {
+            return scenarioConditionProto.getIntValue();
+        } else {
+            return null;
+        }
+    }
+
+    private static Integer getValueDeviceAction(DeviceActionProto deviceActionProto) {
+        if (deviceActionProto.hasValue()) {
+            return deviceActionProto.getValue();
+        } else {
+            return null;
+        }
     }
 }
