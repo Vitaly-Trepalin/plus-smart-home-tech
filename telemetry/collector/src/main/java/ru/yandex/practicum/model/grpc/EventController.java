@@ -6,7 +6,6 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -14,7 +13,6 @@ import ru.yandex.practicum.grpc.telemetry.collector.CollectorControllerGrpc;
 import ru.yandex.practicum.grpc.telemetry.event.ClimateSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceAddedEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceRemovedEventProto;
-import ru.yandex.practicum.grpc.telemetry.event.HubEvent;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.LightSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.MotionSensorProto;
@@ -24,7 +22,6 @@ import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.SwitchSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.TemperatureSensorProto;
 import ru.yandex.practicum.kafka.telemetry.event.ClimateSensorAvro;
-import ru.yandex.practicum.kafka.telemetry.event.DeviceActionAvro;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceRemovedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
@@ -35,10 +32,6 @@ import ru.yandex.practicum.kafka.telemetry.event.ScenarioRemovedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorAvro;
 import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorAvro;
-import ru.yandex.practicum.model.dto.hub.DeviceRemovedEvent;
-import ru.yandex.practicum.model.dto.hub.HubEventType;
-import ru.yandex.practicum.model.dto.hub.ScenarioAddedEvent;
-import ru.yandex.practicum.model.dto.hub.ScenarioRemovedEvent;
 import ru.yandex.practicum.model.mapper.Converter;
 import ru.yandex.practicum.model.mapper.Mapper;
 import ru.yandex.practicum.model.producer.CollectorTopics;
@@ -245,7 +238,6 @@ public class EventController extends CollectorControllerGrpc.CollectorController
                 }
                 case PAYLOAD_NOT_SET -> throw new IllegalArgumentException("Нет события хаба");
             };
-
 
 
             producer.getProducer().send(record);
