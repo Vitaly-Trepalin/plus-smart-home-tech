@@ -3,7 +3,7 @@ spring:
     bootstrap-server: localhost:9092
     producer:
       key.serializer: org.apache.kafka.common.serialization.StringSerializer
-      value.serializer: ru.yandex.practicum.model.producer.CollectorSerializer
+      value.serializer: ru.yandex.practicum.serializer.CollectorSerializer
 grpc:
   server:
     port: 9090
