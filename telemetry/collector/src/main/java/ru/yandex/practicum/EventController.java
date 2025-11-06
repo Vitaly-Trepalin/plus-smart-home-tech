@@ -57,8 +57,8 @@ public class EventController extends CollectorControllerGrpc.CollectorController
             log.info("Получаю данные от Hub router {}", request.getAllFields());
             HubEventProto.PayloadCase payloadCase = request.getPayloadCase();
 
-            if (hubEventHandlers.containsKey(request.getPayloadCase())) {
-                hubEventHandlers.get(request.getPayloadCase()).handle(request);
+            if (hubEventHandlers.containsKey(payloadCase)) {
+                hubEventHandlers.get(payloadCase).handle(request);
             } else {
                 throw new IllegalArgumentException("Не могу найти обработчик для события хаба "
                         + request.getPayloadCase());

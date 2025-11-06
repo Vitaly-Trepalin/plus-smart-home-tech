@@ -19,7 +19,7 @@ import java.util.Properties;
 @ConfigurationProperties(prefix = "aggregator.kafka")
 @Getter
 @Setter
-public class AggregationConfiguration {
+public class AggregatorKafkaConfig {
     private String bootstrapServer;
     private String keySerializer;
     private String valueSerializer;
@@ -29,6 +29,9 @@ public class AggregationConfiguration {
     private String snapshotsTopic;
     private String collectorTopicSensor;
     private String collectorTopicHub;
+    private String maxPollRecords;
+    private String maxPollIntervalMs;
+    private String fetchMaxWaitMs;
 
     @Bean
     Consumer<String, SpecificRecordBase> getConsumer() {
@@ -37,6 +40,9 @@ public class AggregationConfiguration {
         config.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
         config.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializer);
         config.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        config.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords);
+        config.setProperty(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, maxPollIntervalMs);
+        config.setProperty(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, fetchMaxWaitMs);
         return new KafkaConsumer<>(config);
     }
 

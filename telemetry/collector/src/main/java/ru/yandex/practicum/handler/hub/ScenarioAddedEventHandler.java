@@ -2,6 +2,7 @@ package ru.yandex.practicum.handler.hub;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.avro.specific.SpecificRecordBase;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
@@ -10,14 +11,13 @@ import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
 import ru.yandex.practicum.mapper.Mapper;
 import ru.yandex.practicum.serializer.CollectorTopics;
-import ru.yandex.practicum.EventProducer;
 
 import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
 public class ScenarioAddedEventHandler implements HubEventHandler {
-    private final EventProducer producer;
+    private final Producer<String, SpecificRecordBase> producer;
 
     @Override
     public HubEventProto.PayloadCase getMessageType() {
@@ -42,6 +42,6 @@ public class ScenarioAddedEventHandler implements HubEventHandler {
                         )
                 )
         );
-        producer.getProducer().send(record);
+        producer.send(record);
     }
 }

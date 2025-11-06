@@ -2,6 +2,7 @@ package ru.yandex.practicum.handler.sensor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.avro.specific.SpecificRecordBase;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.grpc.telemetry.event.ClimateSensorProto;
@@ -9,14 +10,13 @@ import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.ClimateSensorAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.serializer.CollectorTopics;
-import ru.yandex.practicum.EventProducer;
 
 import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
 public class ClimateSensorEventHandler implements SensorEventHandler {
-    private final EventProducer producer;
+    private final Producer<String, SpecificRecordBase> producer;
 
     @Override
     public SensorEventProto.PayloadCase getMessageType() {
@@ -42,6 +42,6 @@ public class ClimateSensorEventHandler implements SensorEventHandler {
                         )
                 )
         );
-        producer.getProducer().send(record);
+        producer.send(record);
     }
 }

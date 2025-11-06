@@ -9,3 +9,6 @@ aggregator:
     snapshots-topic: telemetry.snapshots.v1
     collector-topic-sensor: telemetry.sensors.v1
     collector-topic-hub: telemetry.hubs.v1
+    max-poll-records: 10
+    max-poll-intervalMs: 30000
+    fetch-max-wait-ms: 100

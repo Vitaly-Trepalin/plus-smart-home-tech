@@ -28,14 +28,14 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class AggregationStarter {
+    private final Producer<String, SpecificRecordBase> producer;
+    private final Consumer<String, SpecificRecordBase> consumer;
     @Value(value = "${aggregator.kafka.snapshots-topic}")
     private String snapshotsTopic;
     @Value(value = "${aggregator.kafka.collector-topic-sensor}")
     private String telemetrySensors;
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
     private static final Map<String, SensorsSnapshotAvro> sensorsSnapshot = new HashMap<>();
-    private final Producer<String, SpecificRecordBase> producer;
-    private final Consumer<String, SpecificRecordBase> consumer;
 
     public void start() {
         try {
@@ -49,9 +49,12 @@ public class AggregationStarter {
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
 
                     SensorEventAvro sensorEventAvro = (SensorEventAvro) record.value();
-                    ProducerRecord<String, SpecificRecordBase> producerRecord = null;
+                    log.warn("Получил событие датчика {}, {}", sensorEventAvro.getId(), sensorEventAvro.getPayload());
+
+                    ProducerRecord<String, SpecificRecordBase> producerRecord;
 
                     Optional<SensorsSnapshotAvro> snapshot = updateState(sensorEventAvro);
+
                     if (snapshot.isPresent()) {
                         producerRecord = new ProducerRecord<>(
                                 snapshotsTopic,
@@ -75,9 +78,9 @@ public class AggregationStarter {
                 producer.flush();
                 consumer.commitSync(currentOffsets);
             } finally {
-                log.info("Закрываем консьюмер");
+                log.info("Закрываем consumer");
                 consumer.close();
-                log.info("Закрываем продюсер");
+                log.info("Закрываем producer");
                 producer.close();
             }
         }
@@ -101,30 +104,38 @@ public class AggregationStarter {
 
     private static Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
         SensorsSnapshotAvro snapshot;
-        if (sensorsSnapshot.containsKey(event.getHubId())) { // проверяем есть ли снимок датчиков
-            snapshot = sensorsSnapshot.get(event.getHubId()); // если есть, то присваеваем его переменной
+        if (sensorsSnapshot.containsKey(event.getHubId())) {
+            snapshot = sensorsSnapshot.get(event.getHubId());
         } else {
             SensorStateAvro sensorState = new SensorStateAvro(event.getTimestamp(), event.getPayload());
+
+            Map<String, SensorStateAvro> sensorsState = new HashMap<>();
+            sensorsState.put(event.getId(), sensorState);
+
             snapshot = new SensorsSnapshotAvro(
                     event.getHubId(),
                     Instant.now(),
-                    Map.of(event.getId(), sensorState)
+                    sensorsState
             );
             sensorsSnapshot.put(event.getHubId(), snapshot);
+            return Optional.of(snapshot);
         }
-        SensorStateAvro oldState = null;
-        if (snapshot.getSensorsState().containsKey(event.getId())) { // есть ли в данном снимке датчиков такой же как нам пришёл
-            oldState = snapshot.getSensorsState().get(event.getId()); // достаём старый датчик с таким же id
-            if (oldState.getTimestamp().isAfter(event.getTimestamp()) && // сравниваем их по времени и содержимому
-                    oldState.getData().equals(event.getPayload())) {
-                return Optional.empty(); // если изменения не требуются ,то возвращаем пустой Optional
+
+        if (snapshot.getSensorsState().containsKey(event.getId())) {
+            SensorStateAvro oldState = snapshot.getSensorsState().get(event.getId());
+            boolean isOutdated = oldState.getTimestamp().isAfter(event.getTimestamp());
+            boolean isDuplicate = !oldState.getTimestamp().isAfter(event.getTimestamp())
+                    && oldState.getData().equals(event.getPayload());
+            if (isOutdated || isDuplicate) {
+                return Optional.empty();
             }
         }
-        SensorStateAvro newSensorStateAvro = new SensorStateAvro(event.getTimestamp(), event.getPayload()); // добавляем новое состояние датчика
-        Map<String, SensorStateAvro> updatedSensorsState = new HashMap<>(snapshot.getSensorsState()); // получаем хэш таблицу с датчика
-        updatedSensorsState.put(event.getId(), newSensorStateAvro); // и устанавливаем новое состояние датчика
-        snapshot.setSensorsState(updatedSensorsState); // обновляем состояние датчиков
-        snapshot.setTimestamp(event.getTimestamp()); // обновляем время снимка по времени датчика
+
+        SensorStateAvro newSensorStateAvro = new SensorStateAvro(event.getTimestamp(), event.getPayload());
+        Map<String, SensorStateAvro> updatedSensorsState = new HashMap<>(snapshot.getSensorsState());
+        updatedSensorsState.put(event.getId(), newSensorStateAvro);
+        snapshot.setSensorsState(updatedSensorsState);
+        snapshot.setTimestamp(event.getTimestamp());
         return Optional.of(snapshot);
     }
 }
