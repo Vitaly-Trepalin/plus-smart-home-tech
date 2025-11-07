@@ -27,6 +27,13 @@ enum DeviceTypeProto {
   SWITCH_SENSOR = 4;      // переключатель
 }
 
+message DeviceActionRequest {
+  string hub_id = 1;
+  string scenario_name = 2;
+  DeviceActionProto action = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+
 message DeviceAddedEventProto {
   string id = 1;        // идентификатор устройства
   DeviceTypeProto type = 2; // тип устройства
