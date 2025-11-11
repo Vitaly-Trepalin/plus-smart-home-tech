@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface SensorRepository extends JpaRepository<Sensor, Long> {
     boolean existsByIdInAndHubId(Collection<String> ids, String hubId);
     Optional<Sensor> findByIdAndHubId(String id, String hubId);
+    Sensor findById(String id);
+    void deleteById(String id);
 }

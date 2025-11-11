@@ -65,6 +65,7 @@ public class AggregationStarter {
                         );
 
                         manageOffsets(record, count, consumer);
+                        log.info("Подготовлен снапшот и отправлен в Analyzer " + producerRecord);
                         producer.send(producerRecord);
                     }
                 }

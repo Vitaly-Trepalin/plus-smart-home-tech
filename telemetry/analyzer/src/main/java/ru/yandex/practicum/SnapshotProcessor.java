@@ -24,11 +24,14 @@ public class SnapshotProcessor {
     private final Consumer<String, SpecificRecordBase> consumer;
     private final String snapshotsTopic; //под вопросом
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
+    private final AnalyzerService analyzerService;
 
     public SnapshotProcessor(@Qualifier(value = "consumerSnapshot") Consumer<String, SpecificRecordBase> consumer,
-                             @Value(value = "${analyzer.kafka.snapshots-topic}") String snapshotsTopic) {
+                             @Value(value = "${analyzer.kafka.snapshots-topic}") String snapshotsTopic,
+                             AnalyzerService analyzerService) {
         this.consumer = consumer;
         this.snapshotsTopic = snapshotsTopic;
+        this.analyzerService = analyzerService;
     }
 
     public void start() {
@@ -45,6 +48,19 @@ public class SnapshotProcessor {
 
                     log.info("Анализатор получил пользовательский снапшот от хаба " + sensorsSnapshotAvro.getHubId() +
                             sensorsSnapshotAvro.getSensorsState().values());
+
+
+                    try {
+                        analyzerService.executingSnapshot(sensorsSnapshotAvro);
+                    } catch (Exception e) {
+                        log.info("Исключение в ходе выполнения обработки исключения " + e.getMessage());
+                    }
+
+
+
+
+
+
 
                     manageOffsets(record, count, consumer);
                     count++;

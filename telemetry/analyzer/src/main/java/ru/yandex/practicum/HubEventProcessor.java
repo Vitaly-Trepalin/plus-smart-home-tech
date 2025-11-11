@@ -11,7 +11,11 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.kafka.telemetry.event.DeviceAddedEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.DeviceRemovedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.ScenarioRemovedEventAvro;
 import ru.yandex.practicum.repository.SensorRepository;
 
 import java.time.Duration;
@@ -26,13 +30,15 @@ public class HubEventProcessor implements Runnable {
     private final String hubTopic;
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
     private final SensorRepository sensorRepository;
+    private final AnalyzerService service;
 
     public HubEventProcessor(@Qualifier(value = "consumerHub") Consumer<String, SpecificRecordBase> consumer,
                              @Value(value = "${analyzer.kafka.collector-topic-hub}") String hubTopic,
-                             SensorRepository sensorRepository) {
+                             SensorRepository sensorRepository, AnalyzerService service) {
         this.consumer = consumer;
         this.hubTopic = hubTopic;
         this.sensorRepository = sensorRepository;
+        this.service = service;
     }
 
     @Override
@@ -48,9 +54,41 @@ public class HubEventProcessor implements Runnable {
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
                     HubEventAvro hubEventAvro = (HubEventAvro) record.value();
 
-                    log.info("Анализатор получил пользовательский сценарий от хаба " + hubEventAvro.getHubId() +
-                            hubEventAvro.getTimestamp() +
+
+
+
+                    log.info("Анализатор получил пользовательский сценарий от хаба " + hubEventAvro.getHubId() + "  " +
+                            hubEventAvro.getTimestamp() + "  " +
                             hubEventAvro.getPayload());
+
+                    Object payload = hubEventAvro.getPayload();
+
+                    try {
+                        switch (payload) {
+                            case DeviceAddedEventAvro deviceAdded -> {
+                                service.addDevice(deviceAdded, hubEventAvro.getHubId());
+                            }
+                            case DeviceRemovedEventAvro deviceRemoved -> {
+                                service.removeDevice(deviceRemoved);
+                            }
+                            case ScenarioAddedEventAvro scenarioAdded -> {
+                                service.addScenario(scenarioAdded, hubEventAvro.getHubId());
+                            }
+                            case ScenarioRemovedEventAvro scenarioRemoved -> {
+                                service.removeScenario(scenarioRemoved);
+                            }
+                            default -> {
+                                System.out.println("Нет такого сценария " + payload.getClass().getSimpleName());
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.warn("Произошло исключение: " + e.getClass() + " " + e.getMessage());
+                    }
+
+
+
+
+
 
                     manageOffsets(record, count, consumer);
                     count++;
@@ -59,7 +97,7 @@ public class HubEventProcessor implements Runnable {
             }
         } catch (WakeupException ignore) {
         } catch (Exception e) {
-            log.error("Ошибка во время обработки снапшотов ", e);
+            log.error("Ошибка во время обработки пользовательского сценария от хаба ", e);
         } finally {
             try {
                 consumer.commitSync(currentOffsets);
