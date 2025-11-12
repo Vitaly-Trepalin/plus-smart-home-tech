@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 public class Collector {
     public static void main(String[] args) {
-        log.info("Launch CollectorService");
+        log.info("Запуск модуля Collector");
         SpringApplication.run(Collector.class, args);
     }
 }

@@ -1,28 +1,14 @@
 package ru.yandex.practicum.mapper;
 
 import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
-import ru.yandex.practicum.grpc.telemetry.event.ConditionOperationProto;
-import ru.yandex.practicum.grpc.telemetry.event.ConditionTypeProto;
-import ru.yandex.practicum.grpc.telemetry.event.DeviceTypeProto;
 import ru.yandex.practicum.kafka.telemetry.event.ActionTypeAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionOperationAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionTypeAvro;
-import ru.yandex.practicum.kafka.telemetry.event.DeviceTypeAvro;
-import ru.yandex.practicum.model.ActionType;
-import ru.yandex.practicum.model.ConditionOperation;
-import ru.yandex.practicum.model.ConditionType;
+import ru.yandex.practicum.dal.entity.ActionType;
+import ru.yandex.practicum.dal.entity.ConditionOperation;
+import ru.yandex.practicum.dal.entity.ConditionType;
 
 public class Converter {
-//    public static DeviceTypeAvro mapToDeviceTypeAvro(DeviceTypeProto deviceType) {
-//        return switch (deviceType) {
-//            case DeviceTypeProto.CLIMATE_SENSOR -> DeviceTypeAvro.CLIMATE_SENSOR;
-//            case DeviceTypeProto.LIGHT_SENSOR -> DeviceTypeAvro.LIGHT_SENSOR;
-//            case DeviceTypeProto.MOTION_SENSOR -> DeviceTypeAvro.MOTION_SENSOR;
-//            case DeviceTypeProto.SWITCH_SENSOR -> DeviceTypeAvro.SWITCH_SENSOR;
-//            case DeviceTypeProto.TEMPERATURE_SENSOR -> DeviceTypeAvro.TEMPERATURE_SENSOR;
-//            case DeviceTypeProto.UNRECOGNIZED -> throw new IllegalArgumentException("Нет такого типа устройств");
-//        };
-//    }
 
     public static ConditionType mapToConditionType(ConditionTypeAvro conditionType) {
         return switch (conditionType) {
