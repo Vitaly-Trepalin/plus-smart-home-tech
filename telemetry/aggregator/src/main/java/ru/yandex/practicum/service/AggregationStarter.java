@@ -1,4 +1,4 @@
-package ru.yandex.practicum;
+package ru.yandex.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Component
+@Service
 @Slf4j
 @RequiredArgsConstructor
 public class AggregationStarter {
@@ -38,6 +38,7 @@ public class AggregationStarter {
     private static final Map<String, SensorsSnapshotAvro> sensorsSnapshot = new HashMap<>();
 
     public void start() {
+
         try {
             consumer.subscribe(List.of(telemetrySensors));
             Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
@@ -49,7 +50,7 @@ public class AggregationStarter {
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
 
                     SensorEventAvro sensorEventAvro = (SensorEventAvro) record.value();
-                    log.warn("Получил событие датчика {}, {}", sensorEventAvro.getId(), sensorEventAvro.getPayload());
+                    log.info("Получено событие датчика от Collector {}, {}", sensorEventAvro.getId(), sensorEventAvro.getPayload());
 
                     ProducerRecord<String, SpecificRecordBase> producerRecord;
 
@@ -66,21 +67,22 @@ public class AggregationStarter {
 
                         manageOffsets(record, count, consumer);
                         producer.send(producerRecord);
+                        log.info("Снапшот был обновлён и отправлен в Analyzer " + producerRecord);
                     }
                 }
                 consumer.commitAsync();
             }
         } catch (WakeupException ignored) {
         } catch (Exception e) {
-            log.error("Ошибка во время обработки событий от датчиков", e);
+            log.error("Произошла ошибка при обработке событий от датчиков ", e);
         } finally {
             try {
                 producer.flush();
                 consumer.commitSync(currentOffsets);
             } finally {
-                log.info("Закрываем consumer");
+                log.info("Закрытие consumer");
                 consumer.close();
-                log.info("Закрываем producer");
+                log.info("Закрытие producer");
                 producer.close();
             }
         }
@@ -96,13 +98,14 @@ public class AggregationStarter {
         if (count % 10 == 0) {
             consumer.commitAsync(currentOffsets, (offsets, exception) -> {
                 if (exception != null) {
-                    log.warn("Ошибка во время фиксации оффсетов: {}", offsets, exception);
+                    log.warn("Ошибка при фиксации смещений offsets: {}", offsets, exception);
                 }
             });
         }
     }
 
     private static Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
+        log.info("Запущен метод для обновления снапшота");
         SensorsSnapshotAvro snapshot;
         if (sensorsSnapshot.containsKey(event.getHubId())) {
             snapshot = sensorsSnapshot.get(event.getHubId());
@@ -127,6 +130,7 @@ public class AggregationStarter {
             boolean isDuplicate = !oldState.getTimestamp().isAfter(event.getTimestamp())
                     && oldState.getData().equals(event.getPayload());
             if (isOutdated || isDuplicate) {
+                log.info("Старый снапшот актуальный, обновление не требуется");
                 return Optional.empty();
             }
         }

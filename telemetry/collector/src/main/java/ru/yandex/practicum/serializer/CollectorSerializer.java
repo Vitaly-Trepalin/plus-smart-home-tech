@@ -28,7 +28,7 @@ public class CollectorSerializer implements Serializer<SpecificRecordBase> {
             }
             return result;
         } catch (IOException e) {
-            throw new SerializationException("Ошибка сериализации данных для топика [" + topic + "]", e);
+            throw new SerializationException("Ошибка сериализации данных в топик [" + topic + "]", e);
         }
     }
 }

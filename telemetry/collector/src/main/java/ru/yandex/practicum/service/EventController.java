@@ -1,4 +1,4 @@
-package ru.yandex.practicum;
+package ru.yandex.practicum.service;
 
 import com.google.protobuf.Empty;
 import io.grpc.Status;
@@ -33,11 +33,11 @@ public class EventController extends CollectorControllerGrpc.CollectorController
     @Override
     public void collectSensorEvent(SensorEventProto request, StreamObserver<Empty> responseObserver) {
         try {
-            log.info("Получаю данные от Hub router {}", request.getAllFields());
+            log.info("Получение данных о состоянии датчиков от Hub router {}", request.getAllFields());
             if (sensorEventHandlers.containsKey(request.getPayloadCase())) {
                 sensorEventHandlers.get(request.getPayloadCase()).handle(request);
             } else {
-                throw new IllegalArgumentException("Не могу найти обработчик для события " + request.getPayloadCase());
+                throw new IllegalArgumentException("Для этого события нет обработчика " + request.getPayloadCase());
             }
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
@@ -54,13 +54,13 @@ public class EventController extends CollectorControllerGrpc.CollectorController
     @Override
     public void collectHubEvent(HubEventProto request, StreamObserver<Empty> responseObserver) {
         try {
-            log.info("Получаю данные от Hub router {}", request.getAllFields());
+            log.info("Получение событий, связанных с хабом от Hub router {}", request.getAllFields());
             HubEventProto.PayloadCase payloadCase = request.getPayloadCase();
 
             if (hubEventHandlers.containsKey(payloadCase)) {
                 hubEventHandlers.get(payloadCase).handle(request);
             } else {
-                throw new IllegalArgumentException("Не могу найти обработчик для события хаба "
+                throw new IllegalArgumentException("Обработчик для этого хаба отсутствует "
                         + request.getPayloadCase());
             }
             responseObserver.onNext(Empty.getDefaultInstance());
