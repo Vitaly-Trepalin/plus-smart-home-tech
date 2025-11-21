@@ -32,9 +32,10 @@ public class AggregatorKafkaConfig {
     private String maxPollRecords;
     private String maxPollIntervalMs;
     private String fetchMaxWaitMs;
+    private String enableAutoCommit;
 
     @Bean
-    Consumer<String, SpecificRecordBase> getConsumer() {
+    Consumer<String, SpecificRecordBase> aggregatorConsumer() {
         Properties config = new Properties();
         config.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         config.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
@@ -43,11 +44,12 @@ public class AggregatorKafkaConfig {
         config.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords);
         config.setProperty(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, maxPollIntervalMs);
         config.setProperty(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, fetchMaxWaitMs);
+        config.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommit);
         return new KafkaConsumer<>(config);
     }
 
     @Bean
-    Producer<String, SpecificRecordBase> getProducer() {
+    Producer<String, SpecificRecordBase> aggregatorProducer() {
         Properties config = new Properties();
         config.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         config.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer);

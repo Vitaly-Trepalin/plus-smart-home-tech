@@ -1,15 +1,14 @@
-package ru.yandex.practicum.mapper;
+package ru.yandex.practicum.dal.mapper;
 
+import ru.yandex.practicum.dal.entity.ActionType;
+import ru.yandex.practicum.dal.entity.ConditionOperation;
+import ru.yandex.practicum.dal.entity.ConditionType;
 import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
 import ru.yandex.practicum.kafka.telemetry.event.ActionTypeAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionOperationAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionTypeAvro;
-import ru.yandex.practicum.dal.entity.ActionType;
-import ru.yandex.practicum.dal.entity.ConditionOperation;
-import ru.yandex.practicum.dal.entity.ConditionType;
 
 public class Converter {
-
     public static ConditionType mapToConditionType(ConditionTypeAvro conditionType) {
         return switch (conditionType) {
             case ConditionTypeAvro.CO2LEVEL -> ConditionType.CO2LEVEL;
@@ -45,5 +44,15 @@ public class Converter {
             case ActionType.INVERSE -> ActionTypeProto.INVERSE;
             case ActionType.SET_VALUE -> ActionTypeProto.SET_VALUE;
         };
+    }
+
+    public static Integer mapToIntegerValue(Object value) {
+        if (value instanceof Boolean) {
+            return (boolean) value ? 1 : 0;
+        } else if (value instanceof Integer) {
+            return (int) value;
+        } else {
+            return null;
+        }
     }
 }

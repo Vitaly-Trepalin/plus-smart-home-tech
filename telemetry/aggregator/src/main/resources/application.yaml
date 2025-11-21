@@ -12,3 +12,5 @@ aggregator:
     max-poll-records: 100
     max-poll-intervalMs: 30000
     fetch-max-wait-ms: 100
+    enable-auto-commit: false
+    consume-attempt-timeout: 100
