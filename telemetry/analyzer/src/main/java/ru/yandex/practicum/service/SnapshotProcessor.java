@@ -1,5 +1,6 @@
 package ru.yandex.practicum.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -8,91 +9,72 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import ru.yandex.practicum.dal.service.AnalyzerService;
-import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
-@Component
+@Service
+@RequiredArgsConstructor
 @Slf4j
 public class SnapshotProcessor {
-    private final Consumer<String, SpecificRecordBase> consumer;
-    private final String snapshotsTopic; //под вопросом
-    private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
-    private final AnalyzerService analyzerService;
-    private final HubRouterClient hubRouterClient;
-
-    public SnapshotProcessor(@Qualifier(value = "consumerSnapshot") Consumer<String, SpecificRecordBase> consumer,
-                             @Value(value = "${analyzer.kafka.snapshots-topic}") String snapshotsTopic,
-                             AnalyzerService analyzerService,
-                             HubRouterClient hubRouterClient) {
-        this.consumer = consumer;
-        this.snapshotsTopic = snapshotsTopic;
-        this.analyzerService = analyzerService;
-        this.hubRouterClient = hubRouterClient;
-    }
+    private final Consumer<String, SpecificRecordBase> snapshotConsumer;
+    private Map<TopicPartition, OffsetAndMetadata> currentOffset = new HashMap<>();
+    @Value(value = "${kafka.config.consume-attempt-timeout}")
+    private long consumeAttemptTimeout;
+    @Value(value = "${kafka.config.topic-snapshots}")
+    private String topicSnapshots;
+    private final SnapshotService service;
 
     public void start() {
-        try {
-            consumer.subscribe(List.of(snapshotsTopic));
-            Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
+        snapshotConsumer.subscribe(List.of(topicSnapshots));
+        Runtime.getRuntime().addShutdownHook(new Thread(snapshotConsumer::wakeup));
 
+        try {
             while (true) {
-                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(Duration.ofMillis(100));
+                ConsumerRecords<String, SpecificRecordBase> records = snapshotConsumer.poll(Duration.ofMillis(consumeAttemptTimeout));
 
                 int count = 0;
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
-                    SensorsSnapshotAvro sensorsSnapshotAvro = (SensorsSnapshotAvro) record.value();
+                    SensorsSnapshotAvro snapshot = (SensorsSnapshotAvro) record.value();
+                    log.info("Получен снапшот от aggregator: {}", snapshot);
 
-                    log.info("Анализатор получил пользовательский снапшот от хаба " + sensorsSnapshotAvro.getHubId() +
-                            sensorsSnapshotAvro.getSensorsState().values());
-
-
-                    List<DeviceActionRequest> deviceActionRequest = List.of();
                     try {
-                        deviceActionRequest = analyzerService.executingSnapshot(sensorsSnapshotAvro);
+                        service.executingSnapshot(snapshot);
                     } catch (Exception e) {
-                        log.info("Исключение в ходе выполнения обработки исключения " + e.getMessage());
+                        log.warn("При обработке входящего сообщения от hub возникло исключение: {}", e.getMessage());
                     }
-                    deviceActionRequest.stream()
-                            .filter(Objects::nonNull)
-                            .forEach(hubRouterClient::sendDeviceAction);
 
-                    manageOffsets(record, count, consumer);
+                    manageOffsets(record, count);
                     count++;
                 }
-                consumer.commitAsync();
+                snapshotConsumer.commitAsync();
             }
-        } catch (WakeupException ignore) {
+        } catch (WakeupException ignored) {
         } catch (Exception e) {
-            log.error("Ошибка во время обработки событий добавления/удаления устройств и сценариев ", e);
+            log.error("Произошла ошибка при обработке снапшотов {}", e.getMessage());
         } finally {
             try {
-                consumer.commitSync(currentOffsets);
+                snapshotConsumer.commitSync(currentOffset);
             } finally {
+                snapshotConsumer.close();
                 log.info("Закрываем consumer");
-                consumer.close();
             }
         }
     }
 
-    private void manageOffsets(ConsumerRecord<String, SpecificRecordBase> record, int count, Consumer<String,
-            SpecificRecordBase> consumer) {
-        currentOffsets.put(new TopicPartition(snapshotsTopic, record.partition()),
+    private void manageOffsets(ConsumerRecord<String, SpecificRecordBase> record, int count) {
+        currentOffset.put(new TopicPartition(record.topic(), record.partition()),
                 new OffsetAndMetadata(record.offset() + 1));
+
         if (count % 10 == 0) {
-            consumer.commitAsync(currentOffsets, (offsets, exception) -> {
+            snapshotConsumer.commitAsync(currentOffset, (offset, exception) -> {
                 if (exception != null) {
-                    log.warn("Ошибка во время фиксации оффсетов: {}", offsets, exception);
+                    log.error("Ошибка фиксации смещений {}", offset, exception);
                 }
             });
         }

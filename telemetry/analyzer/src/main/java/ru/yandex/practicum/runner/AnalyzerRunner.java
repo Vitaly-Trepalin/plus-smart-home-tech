@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.service.HubEventProcessor;
 import ru.yandex.practicum.service.SnapshotProcessor;
 
-
 @Component
 @RequiredArgsConstructor
 public class AnalyzerRunner implements CommandLineRunner {

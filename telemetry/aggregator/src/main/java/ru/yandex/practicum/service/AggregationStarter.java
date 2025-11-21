@@ -36,6 +36,8 @@ public class AggregationStarter {
     private String telemetrySensors;
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
     private static final Map<String, SensorsSnapshotAvro> sensorsSnapshot = new HashMap<>();
+    @Value(value = "${aggregator.kafka.consume-attempt-timeout}")
+    private long consumeAttemptTimeout;
 
     public void start() {
 
@@ -44,13 +46,14 @@ public class AggregationStarter {
             Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
 
             while (true) {
-                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(Duration.ofMillis(100));
+                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(Duration.ofMillis(consumeAttemptTimeout));
 
                 int count = 0;
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
 
                     SensorEventAvro sensorEventAvro = (SensorEventAvro) record.value();
-                    log.info("Получено событие датчика от Collector {}, {}", sensorEventAvro.getId(), sensorEventAvro.getPayload());
+                    log.info("Получено событие датчика от Collector {}, {}",
+                            sensorEventAvro.getId(), sensorEventAvro.getPayload());
 
                     ProducerRecord<String, SpecificRecordBase> producerRecord;
 
@@ -65,7 +68,8 @@ public class AggregationStarter {
                                 snapshot.get()
                         );
 
-                        manageOffsets(record, count, consumer);
+                        manageOffsets(record, count);
+                        count++;
                         producer.send(producerRecord);
                         log.info("Снапшот был обновлён и отправлен в Analyzer " + producerRecord);
                     }
@@ -88,8 +92,7 @@ public class AggregationStarter {
         }
     }
 
-    private static void manageOffsets(ConsumerRecord<String, SpecificRecordBase> record, int count,
-                                      Consumer<String, SpecificRecordBase> consumer) {
+    private void manageOffsets(ConsumerRecord<String, SpecificRecordBase> record, int count) {
         currentOffsets.put(
                 new TopicPartition(record.topic(), record.partition()),
                 new OffsetAndMetadata(record.offset() + 1)
@@ -98,13 +101,13 @@ public class AggregationStarter {
         if (count % 10 == 0) {
             consumer.commitAsync(currentOffsets, (offsets, exception) -> {
                 if (exception != null) {
-                    log.warn("Ошибка при фиксации смещений offsets: {}", offsets, exception);
+                    log.warn("Ошибка при фиксации смещения : {}", offsets, exception);
                 }
             });
         }
     }
 
-    private static Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
+    private Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
         log.info("Запущен метод для обновления снапшота");
         SensorsSnapshotAvro snapshot;
         if (sensorsSnapshot.containsKey(event.getHubId())) {

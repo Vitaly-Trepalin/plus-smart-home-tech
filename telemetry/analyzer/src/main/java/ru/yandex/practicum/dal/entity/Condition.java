@@ -24,18 +24,14 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 public class Condition {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ConditionType type;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ConditionOperation operation;
-
     private Integer value;
 }
