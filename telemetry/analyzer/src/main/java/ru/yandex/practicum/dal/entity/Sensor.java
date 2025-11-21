@@ -21,8 +21,8 @@ import lombok.ToString;
 @Builder
 public class Sensor {
     @Id
-    private String id;
-
     @Column(nullable = false)
+    private String id;
+    @Column(name = "hub_id", nullable = false)
     private String hubId;
 }

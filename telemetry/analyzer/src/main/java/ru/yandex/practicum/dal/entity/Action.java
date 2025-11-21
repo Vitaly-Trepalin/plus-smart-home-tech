@@ -24,7 +24,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 public class Action {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
