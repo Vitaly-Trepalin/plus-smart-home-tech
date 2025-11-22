@@ -1,9 +1,11 @@
-collector:
-  kafka:
-    bootstrap-server: localhost:9092
-    key-serializer: org.apache.kafka.common.serialization.StringSerializer
-    value-serializer: ru.yandex.practicum.serializer.CollectorSerializer
-
-grpc:
-  server:
-    port: 59091
+spring:
+  application:
+    name: collector
+  config:
+    import: configserver:http://localhost:8888
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        userRandomPolicy: true
+        max-interval: 6000
