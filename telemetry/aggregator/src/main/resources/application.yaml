@@ -3,7 +3,6 @@ spring:
     name: aggregator
   config:
     import: "configserver:"
-
   cloud:
     config:
       fail-fast: true
@@ -13,15 +12,6 @@ spring:
       discovery:
         enabled: true
         serviceId: config-server
-
-#  config:
-#    import: configserver:http://localhost:8888
-##  cloud:
-#    config:
-#      fail-fast: true
-#      retry:
-#        userRandomPolicy: true
-#        max-interval: 6000
 
 server:
   port: 0
