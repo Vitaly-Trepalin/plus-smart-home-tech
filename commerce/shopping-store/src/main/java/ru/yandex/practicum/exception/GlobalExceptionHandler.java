@@ -12,9 +12,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ApiError handleProductNotFoundException(ProductNotFoundException e) {
+    public ProductNotFoundException handleProductNotFoundException(ProductNotFoundException e) {
         log.warn("Исключение : {}", e.getClass().getSimpleName(), e.getMessage(), e.getCause());
-        return new ApiError(e.getMessage(), e.getCause().toString());
+        return new ProductNotFoundException(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

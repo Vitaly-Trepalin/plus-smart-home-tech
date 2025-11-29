@@ -21,6 +21,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CartServiceImpl implements CartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ProductQuantityRepository productQuantityRepository;
