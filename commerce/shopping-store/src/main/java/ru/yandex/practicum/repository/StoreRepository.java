@@ -2,8 +2,8 @@ package ru.yandex.practicum.repository;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import ru.yandex.practicum.dto.store.ProductCategory;
 import ru.yandex.practicum.entity.Product;
-import ru.yandex.practicum.entity.ProductCategory;
 
 import java.util.List;
 

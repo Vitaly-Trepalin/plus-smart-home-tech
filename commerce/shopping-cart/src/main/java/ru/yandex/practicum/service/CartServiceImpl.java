@@ -9,8 +9,8 @@ import ru.yandex.practicum.dal.entity.ShoppingCartState;
 import ru.yandex.practicum.dal.mapper.Mapper;
 import ru.yandex.practicum.dal.repository.ProductQuantityRepository;
 import ru.yandex.practicum.dal.repository.ShoppingCartRepository;
-import ru.yandex.practicum.dto.ChangeProductQuantityRequest;
-import ru.yandex.practicum.dto.ShoppingCartDto;
+import ru.yandex.practicum.dto.cart.ChangeProductQuantityRequest;
+import ru.yandex.practicum.dto.cart.ShoppingCartDto;
 import ru.yandex.practicum.exception.NoProductsInShoppingCartException;
 import ru.yandex.practicum.exception.NoSuchCartException;
 import ru.yandex.practicum.exception.NotAuthorizedUserException;
@@ -24,6 +24,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CartServiceImpl implements CartService {
+    private final WarehouseClient warehouseClient;
     private final ShoppingCartRepository shoppingCartRepository;
     private final ProductQuantityRepository productQuantityRepository;
 
@@ -53,6 +54,9 @@ public class CartServiceImpl implements CartService {
                 .build();
 
         ShoppingCart savedShoppingCart = shoppingCartRepository.save(shoppingCart);
+
+        warehouseClient.sufficiencyCheck(new ru.yandex.practicum.dto.warehouse.ShoppingCartDto(
+                savedShoppingCart.getShoppingCartId(), productList));
 
         productQuantityRepository.saveAll(Mapper.mapToProductQuantity(productList, savedShoppingCart));
 

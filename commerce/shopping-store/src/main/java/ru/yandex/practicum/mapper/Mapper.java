@@ -2,8 +2,8 @@ package ru.yandex.practicum.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.yandex.practicum.dto.Pageable;
-import ru.yandex.practicum.dto.ProductDto;
+import ru.yandex.practicum.dto.store.Pageable;
+import ru.yandex.practicum.dto.store.ProductDto;
 import ru.yandex.practicum.entity.Product;
 
 public class Mapper {

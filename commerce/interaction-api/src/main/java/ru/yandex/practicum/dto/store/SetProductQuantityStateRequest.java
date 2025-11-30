@@ -1,9 +1,8 @@
-package ru.yandex.practicum.dto;
+package ru.yandex.practicum.dto.store;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import ru.yandex.practicum.entity.QuantityState;
 
 public record SetProductQuantityStateRequest(
         @NotBlank(message = "Отсутствует идентификатор товара в БД")

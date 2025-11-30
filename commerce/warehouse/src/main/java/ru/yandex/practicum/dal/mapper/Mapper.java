@@ -1,8 +1,8 @@
 package ru.yandex.practicum.dal.mapper;
 
 import ru.yandex.practicum.dal.entity.Product;
-import ru.yandex.practicum.dto.BookedProductsDto;
-import ru.yandex.practicum.dto.NewProductInWarehouseRequest;
+import ru.yandex.practicum.dto.warehouse.BookedProductsDto;
+import ru.yandex.practicum.dto.warehouse.NewProductInWarehouseRequest;
 
 public class Mapper {
     public static Product mapToProduct(NewProductInWarehouseRequest newProductInWarehouseRequest) {

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.dto;
+package ru.yandex.practicum.dto.store;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -6,9 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
-import ru.yandex.practicum.entity.ProductCategory;
-import ru.yandex.practicum.entity.ProductState;
-import ru.yandex.practicum.entity.QuantityState;
 
 @Builder
 public record ProductDto(

@@ -13,6 +13,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.yandex.practicum.dto.store.ProductCategory;
+import ru.yandex.practicum.dto.store.ProductState;
+import ru.yandex.practicum.dto.store.QuantityState;
 
 import java.util.UUID;
 

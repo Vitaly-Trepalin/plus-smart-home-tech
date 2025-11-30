@@ -1,11 +1,11 @@
 package ru.yandex.practicum.service;
 
-import ru.yandex.practicum.dto.PageDto;
-import ru.yandex.practicum.dto.Pageable;
-import ru.yandex.practicum.dto.ProductDto;
-import ru.yandex.practicum.dto.SetProductQuantityStateRequest;
-import ru.yandex.practicum.dto.UpdateProductDto;
-import ru.yandex.practicum.entity.ProductCategory;
+import ru.yandex.practicum.dto.store.PageDto;
+import ru.yandex.practicum.dto.store.Pageable;
+import ru.yandex.practicum.dto.store.ProductCategory;
+import ru.yandex.practicum.dto.store.ProductDto;
+import ru.yandex.practicum.dto.store.SetProductQuantityStateRequest;
+import ru.yandex.practicum.dto.store.UpdateProductDto;
 
 public interface StoreService {
     PageDto getAllByType(ProductCategory category, Pageable pageable);

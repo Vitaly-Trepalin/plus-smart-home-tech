@@ -1,11 +1,8 @@
-package ru.yandex.practicum.dto;
+package ru.yandex.practicum.dto.store;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import ru.yandex.practicum.entity.ProductCategory;
-import ru.yandex.practicum.entity.ProductState;
-import ru.yandex.practicum.entity.QuantityState;
 
 public record UpdateProductDto(
         @Size(max = 255, message = "Идентификатор товара превысил 255 символов")
