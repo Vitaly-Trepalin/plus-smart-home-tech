@@ -13,6 +13,7 @@ import ru.yandex.practicum.dto.ProductQuantityDto;
 import ru.yandex.practicum.dto.ShoppingCartDto;
 import ru.yandex.practicum.exception.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.exception.ProductInShoppingCartLowQuantityInWarehouse;
+import ru.yandex.practicum.exception.SpecifiedProductAlreadyInWarehouseException;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -27,13 +28,18 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class WarehouseServiceImpl implements WarehouseService {
     private final ProductRepository productRepository;
-    private static final String[] ADDRESSES = new String[] {"ADDRESS_1", "ADDRESS_2"};
+    private static final String[] ADDRESSES = new String[]{"ADDRESS_1", "ADDRESS_2"};
     private static final String CURRENT_ADDRESS =
             ADDRESSES[Random.from(new SecureRandom()).nextInt(0, ADDRESSES.length)];
 
     @Override
     @Transactional
     public String addProduct(NewProductInWarehouseRequest newProductInWarehouseRequest) {
+        if (productRepository.existsById(newProductInWarehouseRequest.productId())) {
+            throw new SpecifiedProductAlreadyInWarehouseException("Ошибка, товар с таким описанием уже " +
+                    "зарегистрирован на складе");
+        }
+
         Product product = Mapper.mapToProduct(newProductInWarehouseRequest);
         productRepository.save(product);
         return "ОК";
@@ -64,7 +70,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             fragile = product.isFragile() ? true : fragile;
         }
 
-        if (productInShoppingCartLowQuantityInWarehouse.isEmpty()) {
+        if (!productInShoppingCartLowQuantityInWarehouse.isEmpty()) {
             throw new ProductInShoppingCartLowQuantityInWarehouse
                     (String.format("Ошибка, эти товары из корзины не находится в требуемом количестве на складе: %s",
                             productInShoppingCartLowQuantityInWarehouse));

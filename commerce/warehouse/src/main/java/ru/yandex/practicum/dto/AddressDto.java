@@ -7,5 +7,4 @@ public record AddressDto(
         String house,
         String flat
 ) {
-
 }

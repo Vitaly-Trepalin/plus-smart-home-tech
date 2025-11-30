@@ -15,6 +15,7 @@ import ru.yandex.practicum.exception.NoProductsInShoppingCartException;
 import ru.yandex.practicum.exception.NoSuchCartException;
 import ru.yandex.practicum.exception.NotAuthorizedUserException;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,6 +41,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCartDto addProductToCart(String username, Map<String, Long> productList) {
         if (username == null || username.isBlank()) {
             throw new NotAuthorizedUserException("Имя пользователя не должно быть пустым");
@@ -86,11 +88,14 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new NoSuchCartException(String.format("Нет корзины товаров пользователя c id = %s",
                         username)));
 
-        List<ProductQuantity> productQuantities = shoppingCart.getProductQuantities().stream()
-                .filter(productQuantity -> productId.contains(productQuantity.getProductId()))
-                .toList();
+        List<ProductQuantity> productQuantitiesInCart = shoppingCart.getProductQuantities();
 
-        shoppingCart.getProductQuantities().removeAll(productQuantities);
+        List<String> productIdsInCart = productQuantitiesInCart.stream().map(ProductQuantity::getProductId).toList();
+        if (!(new HashSet<>(productIdsInCart).containsAll(productId))) {
+            throw new NoProductsInShoppingCartException("Нет искомых товаров в корзине");
+        }
+
+        shoppingCart.getProductQuantities().removeAll(productQuantitiesInCart);
 
         return Mapper.mapToShoppingCartDto(shoppingCart.getShoppingCartId(), shoppingCart.getProductQuantities());
     }

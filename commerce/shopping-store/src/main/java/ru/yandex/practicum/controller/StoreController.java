@@ -54,7 +54,7 @@ public class StoreController {
     }
 
     @PostMapping("/quantityState")
-    public String setQuantityState(SetProductQuantityStateRequest stateRequest) {
+    public String setQuantityState(@ModelAttribute @Valid SetProductQuantityStateRequest stateRequest) {
         log.info("Запущен метод setQuantityState(SetProductQuantityStateRequest stateRequest = {})", stateRequest);
         return service.setQuantityState(stateRequest);
     }

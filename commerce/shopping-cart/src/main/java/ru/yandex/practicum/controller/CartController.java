@@ -55,7 +55,8 @@ public class CartController {
 
     @PostMapping("/change-quantity")
     public ShoppingCartDto changeProductsFromCart(@RequestParam String username,
-                                                  @RequestBody @NotNull ChangeProductQuantityRequest changeProductQuantityRequest) {
+                                                  @RequestBody @NotNull
+                                                  ChangeProductQuantityRequest changeProductQuantityRequest) {
         log.info("Запущен метод changeProductsFromCart(String username = {}," +
                         "ChangeProductQuantityRequest changeProductQuantityRequest = {})", username,
                 changeProductQuantityRequest);
