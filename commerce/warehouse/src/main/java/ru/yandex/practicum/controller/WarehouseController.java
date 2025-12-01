@@ -26,10 +26,10 @@ public class WarehouseController implements Warehouse {
 
     @Override
     @PutMapping
-    public String addProduct(@RequestBody @Valid NewProductInWarehouseRequest newProductInWarehouseRequest) {
+    public void addProduct(@RequestBody @Valid NewProductInWarehouseRequest newProductInWarehouseRequest) {
         log.info("Запущен метод addProduct(NewProductInWarehouseRequest newProductInWarehouseRequest = {})",
                 newProductInWarehouseRequest);
-        return service.addProduct(newProductInWarehouseRequest);
+        service.addProduct(newProductInWarehouseRequest);
     }
 
     @Override

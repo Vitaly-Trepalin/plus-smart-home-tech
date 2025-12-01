@@ -13,7 +13,7 @@ import ru.yandex.practicum.dto.warehouse.ShoppingCartDto;
 
 public interface Warehouse {
     @PutMapping("/api/v1/warehouse")
-    String addProduct(@RequestBody @Valid NewProductInWarehouseRequest newProductInWarehouseRequest);
+    void addProduct(@RequestBody @Valid NewProductInWarehouseRequest newProductInWarehouseRequest);
 
     @PostMapping("/api/v1/warehouse/check")
     BookedProductsDto sufficiencyCheck(@RequestBody @Valid ShoppingCartDto shoppingCartDto);

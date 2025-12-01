@@ -34,7 +34,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     @Transactional
-    public String addProduct(NewProductInWarehouseRequest newProductInWarehouseRequest) {
+    public void addProduct(NewProductInWarehouseRequest newProductInWarehouseRequest) {
         if (productRepository.existsById(newProductInWarehouseRequest.productId())) {
             throw new SpecifiedProductAlreadyInWarehouseException("Ошибка, товар с таким описанием уже " +
                     "зарегистрирован на складе");
@@ -42,7 +42,6 @@ public class WarehouseServiceImpl implements WarehouseService {
 
         Product product = Mapper.mapToProduct(newProductInWarehouseRequest);
         productRepository.save(product);
-        return "ОК";
     }
 
     @Override

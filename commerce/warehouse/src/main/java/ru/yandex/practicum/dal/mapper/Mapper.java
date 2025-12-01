@@ -13,7 +13,7 @@ public class Mapper {
                 .height(newProductInWarehouseRequest.dimension().height())
                 .depth(newProductInWarehouseRequest.dimension().depth())
                 .weight(newProductInWarehouseRequest.weight())
-                .quantity(0)
+//                .quantity(0)
                 .build();
     }
 
