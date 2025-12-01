@@ -48,19 +48,15 @@ public class CartServiceImpl implements CartService {
             throw new NotAuthorizedUserException("Имя пользователя не должно быть пустым");
         }
 
-        ShoppingCart shoppingCart = ShoppingCart.builder()
-                .userName(username)
-                .state(ShoppingCartState.ACTIVE)
-                .build();
-
-        ShoppingCart savedShoppingCart = shoppingCartRepository.save(shoppingCart);
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserName(username)
+                .orElse(shoppingCartRepository.save(createShoppingCart(username)));
 
         warehouseClient.sufficiencyCheck(new ru.yandex.practicum.dto.warehouse.ShoppingCartDto(
-                savedShoppingCart.getShoppingCartId(), productList));
+                shoppingCart.getShoppingCartId(), productList));
 
-        productQuantityRepository.saveAll(Mapper.mapToProductQuantity(productList, savedShoppingCart));
+        productQuantityRepository.saveAll(Mapper.mapToProductQuantity(productList, shoppingCart));
 
-        return new ShoppingCartDto(savedShoppingCart.getShoppingCartId(), productList);
+        return new ShoppingCartDto(shoppingCart.getShoppingCartId(), productList);
     }
 
     @Override
@@ -127,5 +123,12 @@ public class CartServiceImpl implements CartService {
 
 
         return Mapper.mapToShoppingCartDto(shoppingCart.getShoppingCartId(), shoppingCart.getProductQuantities());
+    }
+
+    private ShoppingCart createShoppingCart(String username) {
+        return ShoppingCart.builder()
+                .userName(username)
+                .state(ShoppingCartState.ACTIVE)
+                .build();
     }
 }
