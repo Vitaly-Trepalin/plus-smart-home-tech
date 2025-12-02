@@ -49,7 +49,7 @@ public class CartServiceImpl implements CartService {
         }
 
         ShoppingCart shoppingCart = shoppingCartRepository.findByUserName(username)
-                .orElse(shoppingCartRepository.save(createShoppingCart(username)));
+                .orElseGet(() -> shoppingCartRepository.save(createShoppingCart(username)));
 
         warehouseClient.sufficiencyCheck(new ru.yandex.practicum.dto.warehouse.ShoppingCartDto(
                 shoppingCart.getShoppingCartId(), productList));
