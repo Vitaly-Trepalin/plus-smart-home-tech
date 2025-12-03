@@ -1,3 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS cart_schema;
+
 CREATE TABLE IF NOT EXISTS shopping_cart (
     shopping_cart_id VARCHAR(255) PRIMARY KEY,
     user_name        VARCHAR(255) NOT NULL UNIQUE,

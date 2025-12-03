@@ -1,3 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS store_schema;
+
 CREATE TABLE IF NOT EXISTS products (
     product_id       VARCHAR(255)  PRIMARY KEY,
     product_name     VARCHAR(255)  NOT NULL,
