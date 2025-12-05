@@ -1,7 +1,8 @@
-package ru.yandex.practicum.http;
+package ru.yandex.practicum.api;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,22 +18,22 @@ import ru.yandex.practicum.dto.store.SetProductQuantityStateRequest;
 import ru.yandex.practicum.dto.store.UpdateProductDto;
 
 public interface ShoppingStore {
-    @GetMapping("/api/v1/shopping-store")
-    PageDto getAllByType(@RequestParam ProductCategory category,
+    @GetMapping
+    PageDto getAllByType(@RequestParam @NotNull ProductCategory category,
                          @ModelAttribute Pageable pageable);
 
-    @PutMapping("/api/v1/shopping-store")
+    @PutMapping
     ProductDto addProduct(@RequestBody @Valid ProductDto productDto);
 
-    @PostMapping("/api/v1/shopping-store")
+    @PostMapping
     ProductDto updateProduct(@RequestBody @Valid UpdateProductDto productDto);
 
-    @PostMapping("/api/v1/shopping-store/removeProductFromStore")
+    @PostMapping("/removeProductFromStore")
     String removeProduct(@RequestBody @NotBlank String productId);
 
-    @PostMapping("/api/v1/shopping-store/quantityState")
+    @PostMapping("/quantityState")
     String setQuantityState(@ModelAttribute @Valid SetProductQuantityStateRequest stateRequest);
 
-    @GetMapping("/api/v1/shopping-store/{productId}")
+    @GetMapping("/{productId}")
     ProductDto getProduct(@PathVariable @NotBlank String productId);
 }

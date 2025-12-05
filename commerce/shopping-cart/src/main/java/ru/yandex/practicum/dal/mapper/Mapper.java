@@ -1,7 +1,7 @@
 package ru.yandex.practicum.dal.mapper;
 
-import ru.yandex.practicum.dal.entity.ProductQuantity;
-import ru.yandex.practicum.dal.entity.ShoppingCart;
+import ru.yandex.practicum.entity.ProductQuantity;
+import ru.yandex.practicum.entity.ShoppingCart;
 import ru.yandex.practicum.dto.cart.ShoppingCartDto;
 
 import java.util.List;

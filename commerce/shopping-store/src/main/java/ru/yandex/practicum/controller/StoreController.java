@@ -2,8 +2,10 @@ package ru.yandex.practicum.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,50 +21,58 @@ import ru.yandex.practicum.dto.store.ProductCategory;
 import ru.yandex.practicum.dto.store.ProductDto;
 import ru.yandex.practicum.dto.store.SetProductQuantityStateRequest;
 import ru.yandex.practicum.dto.store.UpdateProductDto;
-import ru.yandex.practicum.http.ShoppingStore;
+import ru.yandex.practicum.api.ShoppingStore;
 import ru.yandex.practicum.service.StoreService;
+import ru.yandex.practicum.util.Loggable;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 @RequestMapping("/api/v1/shopping-store")
 public class StoreController implements ShoppingStore {
     private final StoreService service;
 
+    @Override
     @GetMapping
-    public PageDto getAllByType(@RequestParam ProductCategory category,
+    @Loggable
+    public PageDto getAllByType(@RequestParam @NotNull ProductCategory category,
                                 @ModelAttribute Pageable pageable) {
-        log.info("Запущен метод getAllByType(ProductCategory category = {}, String pageable = {})", category, pageable);
         return service.getAllByType(category, pageable);
     }
 
+    @Override
     @PutMapping
+    @Loggable
     public ProductDto addProduct(@RequestBody @Valid ProductDto productDto) {
-        log.info("Запущен метод addProduct(ProductDto productDto = {})", productDto);
         return service.addProduct(productDto);
     }
 
+    @Override
     @PostMapping
+    @Loggable
     public ProductDto updateProduct(@RequestBody @Valid UpdateProductDto productDto) {
-        log.info("Запущен метод updateProduct(UpdateProductDto productDto = {})", productDto);
         return service.updateProduct(productDto);
     }
 
+    @Override
     @PostMapping("/removeProductFromStore")
+    @Loggable
     public String removeProduct(@RequestBody @NotBlank String productId) {
-        log.info("Запущен метод removeProduct(String productId = {})", productId);
         return service.removeProduct(productId);
     }
 
+    @Override
     @PostMapping("/quantityState")
+    @Loggable
     public String setQuantityState(@ModelAttribute @Valid SetProductQuantityStateRequest stateRequest) {
-        log.info("Запущен метод setQuantityState(SetProductQuantityStateRequest stateRequest = {})", stateRequest);
         return service.setQuantityState(stateRequest);
     }
 
+    @Override
     @GetMapping("/{productId}")
+    @Loggable
     public ProductDto getProduct(@PathVariable @NotBlank String productId) {
-        log.info("Запущен метод getProduct(String productId)  = {})", productId);
         return service.getProduct(productId);
     }
 }

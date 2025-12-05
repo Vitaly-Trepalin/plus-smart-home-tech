@@ -14,9 +14,9 @@ import ru.yandex.practicum.dto.store.SetProductQuantityStateRequest;
 import ru.yandex.practicum.dto.store.SortOrder;
 import ru.yandex.practicum.dto.store.UpdateProductDto;
 import ru.yandex.practicum.exception.ProductNotFoundException;
-import ru.yandex.practicum.mapper.Mapper;
+import ru.yandex.practicum.dal.mapper.Mapper;
 import ru.yandex.practicum.entity.Product;
-import ru.yandex.practicum.repository.StoreRepository;
+import ru.yandex.practicum.dal.repository.StoreRepository;
 
 import java.util.List;
 import java.util.Objects;

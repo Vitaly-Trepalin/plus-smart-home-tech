@@ -3,7 +3,7 @@ package ru.yandex.practicum.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.dal.entity.Product;
+import ru.yandex.practicum.entity.Product;
 import ru.yandex.practicum.dal.mapper.Mapper;
 import ru.yandex.practicum.dal.repository.ProductRepository;
 import ru.yandex.practicum.dto.warehouse.AddressDto;

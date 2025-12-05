@@ -1,4 +1,4 @@
-package ru.yandex.practicum.repository;
+package ru.yandex.practicum.dal.repository;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.http;
+package ru.yandex.practicum.api;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,15 +12,15 @@ import ru.yandex.practicum.dto.warehouse.ProductQuantityDto;
 import ru.yandex.practicum.dto.warehouse.ShoppingCartDto;
 
 public interface Warehouse {
-    @PutMapping("/api/v1/warehouse")
+    @PutMapping
     void addProduct(@RequestBody @Valid NewProductInWarehouseRequest newProductInWarehouseRequest);
 
-    @PostMapping("/api/v1/warehouse/check")
+    @PostMapping("/check")
     BookedProductsDto sufficiencyCheck(@RequestBody @Valid ShoppingCartDto shoppingCartDto);
 
-    @PostMapping("/api/v1/warehouse/add")
+    @PostMapping("/add")
     void addProductToWarehouse(@RequestBody @Valid ProductQuantityDto productQuantityDto);
 
-    @GetMapping("/api/v1/warehouse/address")
+    @GetMapping("/address")
     AddressDto getAddress();
 }

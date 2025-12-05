@@ -1,4 +1,4 @@
-package ru.yandex.practicum.dal.entity;
+package ru.yandex.practicum.entity;
 
 public enum ShoppingCartState {
     ACTIVE,

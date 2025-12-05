@@ -14,8 +14,9 @@ import ru.yandex.practicum.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.dto.warehouse.NewProductInWarehouseRequest;
 import ru.yandex.practicum.dto.warehouse.ProductQuantityDto;
 import ru.yandex.practicum.dto.warehouse.ShoppingCartDto;
-import ru.yandex.practicum.http.Warehouse;
+import ru.yandex.practicum.api.Warehouse;
 import ru.yandex.practicum.service.WarehouseService;
+import ru.yandex.practicum.util.Loggable;
 
 @RestController
 @RequestMapping("/api/v1/warehouse")
@@ -26,30 +27,29 @@ public class WarehouseController implements Warehouse {
 
     @Override
     @PutMapping
+    @Loggable
     public void addProduct(@RequestBody @Valid NewProductInWarehouseRequest newProductInWarehouseRequest) {
-        log.info("Запущен метод addProduct(NewProductInWarehouseRequest newProductInWarehouseRequest = {})",
-                newProductInWarehouseRequest);
         service.addProduct(newProductInWarehouseRequest);
     }
 
     @Override
     @PostMapping("/check")
+    @Loggable
     public BookedProductsDto sufficiencyCheck(@RequestBody @Valid ShoppingCartDto shoppingCartDto) {
-        log.info("Запущен метод sufficiencyСheck(ShoppingCartDto shoppingCartDto = {})", shoppingCartDto);
         return service.sufficiencyCheck(shoppingCartDto);
     }
 
     @Override
     @PostMapping("/add")
+    @Loggable
     public void addProductToWarehouse(@RequestBody @Valid ProductQuantityDto productQuantityDto) {
-        log.info("Запущен метод addProductToWarehouse(ProductQuantityDto productQuantityDto = {})", productQuantityDto);
         service.addProductToWarehouse(productQuantityDto);
     }
 
     @Override
     @GetMapping("/address")
+    @Loggable
     public AddressDto getAddress() {
-        log.info("Запущен метод AddressDto getAddress()");
         return service.getAddress();
     }
 }
