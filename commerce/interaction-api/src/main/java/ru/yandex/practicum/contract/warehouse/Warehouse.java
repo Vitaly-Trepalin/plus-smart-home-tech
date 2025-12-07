@@ -1,4 +1,4 @@
-package ru.yandex.practicum.api;
+package ru.yandex.practicum.contract.warehouse;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,7 @@ public interface Warehouse {
     void addProduct(@RequestBody @Valid NewProductInWarehouseRequest newProductInWarehouseRequest);
 
     @PostMapping("/check")
-    BookedProductsDto sufficiencyCheck(@RequestBody @Valid ShoppingCartDto shoppingCartDto);
+    BookedProductsDto checkProductQuantityEnoughForShoppingCart(@RequestBody @Valid ShoppingCartDto shoppingCartDto);
 
     @PostMapping("/add")
     void addProductToWarehouse(@RequestBody @Valid ProductQuantityDto productQuantityDto);

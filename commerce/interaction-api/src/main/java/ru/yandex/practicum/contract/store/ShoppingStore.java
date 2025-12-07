@@ -1,4 +1,4 @@
-package ru.yandex.practicum.api;
+package ru.yandex.practicum.contract.store;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

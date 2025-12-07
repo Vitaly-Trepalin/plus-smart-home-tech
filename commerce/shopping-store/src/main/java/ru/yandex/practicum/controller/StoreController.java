@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,13 +20,12 @@ import ru.yandex.practicum.dto.store.ProductCategory;
 import ru.yandex.practicum.dto.store.ProductDto;
 import ru.yandex.practicum.dto.store.SetProductQuantityStateRequest;
 import ru.yandex.practicum.dto.store.UpdateProductDto;
-import ru.yandex.practicum.api.ShoppingStore;
+import ru.yandex.practicum.contract.store.ShoppingStore;
 import ru.yandex.practicum.service.StoreService;
 import ru.yandex.practicum.util.Loggable;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 @Validated
 @RequestMapping("/api/v1/shopping-store")
 public class StoreController implements ShoppingStore {

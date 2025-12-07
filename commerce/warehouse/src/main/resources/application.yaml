@@ -13,7 +13,6 @@ spring:
         enabled: true
         serviceId: config-server
 
-
 server:
   port: 0
 
@@ -31,4 +30,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health,info,circuitbreakers,circuitbreakerevents,metrics

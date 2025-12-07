@@ -2,7 +2,6 @@ package ru.yandex.practicum.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,13 +13,12 @@ import ru.yandex.practicum.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.dto.warehouse.NewProductInWarehouseRequest;
 import ru.yandex.practicum.dto.warehouse.ProductQuantityDto;
 import ru.yandex.practicum.dto.warehouse.ShoppingCartDto;
-import ru.yandex.practicum.api.Warehouse;
+import ru.yandex.practicum.contract.warehouse.Warehouse;
 import ru.yandex.practicum.service.WarehouseService;
 import ru.yandex.practicum.util.Loggable;
 
 @RestController
 @RequestMapping("/api/v1/warehouse")
-@Slf4j
 @RequiredArgsConstructor
 public class WarehouseController implements Warehouse {
     private final WarehouseService service;
@@ -35,8 +33,8 @@ public class WarehouseController implements Warehouse {
     @Override
     @PostMapping("/check")
     @Loggable
-    public BookedProductsDto sufficiencyCheck(@RequestBody @Valid ShoppingCartDto shoppingCartDto) {
-        return service.sufficiencyCheck(shoppingCartDto);
+    public BookedProductsDto checkProductQuantityEnoughForShoppingCart(@RequestBody @Valid ShoppingCartDto shoppingCartDto) {
+        return service.checkProductQuantityEnoughForShoppingCart(shoppingCartDto);
     }
 
     @Override

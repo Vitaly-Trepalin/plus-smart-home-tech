@@ -1,8 +1,11 @@
 package ru.yandex.practicum.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
+import ru.yandex.practicum.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.entity.ProductQuantity;
 import ru.yandex.practicum.entity.ShoppingCart;
 import ru.yandex.practicum.entity.ShoppingCartState;
@@ -22,11 +25,12 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Slf4j
 public class CartServiceImpl implements CartService {
     private final WarehouseClient warehouseClient;
     private final ShoppingCartRepository shoppingCartRepository;
     private final ProductQuantityRepository productQuantityRepository;
+    private final TransactionTemplate transactionTemplate;
 
     @Override
     public ShoppingCartDto getShoppingCart(String username) {
@@ -42,21 +46,28 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @Transactional
     public ShoppingCartDto addProductToCart(String username, Map<String, Long> productList) {
         if (username == null || username.isBlank()) {
             throw new NotAuthorizedUserException("Имя пользователя не должно быть пустым");
         }
 
-        ShoppingCart shoppingCart = shoppingCartRepository.findByUserName(username)
-                .orElseGet(() -> shoppingCartRepository.save(createShoppingCart(username)));
+        warehouseClient.checkProductQuantityEnoughForShoppingCart(
+                new ru.yandex.practicum.dto.warehouse.ShoppingCartDto("", productList));
 
-        warehouseClient.sufficiencyCheck(new ru.yandex.practicum.dto.warehouse.ShoppingCartDto(
-                shoppingCart.getShoppingCartId(), productList));
+        return transactionTemplate.execute((status) -> {
+            ShoppingCart shoppingCart = shoppingCartRepository.findByUserName(username)
+                    .orElseGet(() -> shoppingCartRepository.save(createShoppingCart(username)));
 
-        productQuantityRepository.saveAll(Mapper.mapToProductQuantity(productList, shoppingCart));
+            productQuantityRepository.saveAll(Mapper.mapToProductQuantity(productList, shoppingCart));
+            return new ShoppingCartDto(shoppingCart.getShoppingCartId(), productList);
+        });
+    }
 
-        return new ShoppingCartDto(shoppingCart.getShoppingCartId(), productList);
+    private boolean isFallbackResponse(BookedProductsDto bookedProductsDto) {
+        if (bookedProductsDto.deliveryWeight() == -1 || bookedProductsDto.deliveryVolume() == -1) {
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -22,6 +22,13 @@ public class GlobalExceptionHandler {
         return new ApiError(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
     }
 
+    @ExceptionHandler(InvalidRequestException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ApiError handleInvalidRequestException(InvalidRequestException e) {
+        log.warn("Исключение: {} Сообщение: {} ", e.getClass().getSimpleName(), e.getMessage());
+        return new ApiError(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ApiError handleMethodHttpMessageNotReadableException(HttpMessageNotReadableException e) {
@@ -62,6 +69,13 @@ public class GlobalExceptionHandler {
     public ApiError handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         log.warn("Исключение: {} Сообщение: {} ", e.getClass().getSimpleName(), e.getMessage());
         return new ApiError(e.getMessage(), HttpStatus.CONFLICT, LocalDateTime.now());
+    }
+
+    @ExceptionHandler(WarehouseServiceUnavailableException.class)
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    public ApiError handleWarehouseServiceUnavailableException(WarehouseServiceUnavailableException e) {
+        log.warn("Исключение: {} Сообщение: {} ", e.getClass().getSimpleName(), e.getMessage());
+        return new ApiError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, LocalDateTime.now());
     }
 
     @ExceptionHandler(Exception.class)

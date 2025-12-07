@@ -24,11 +24,11 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public PageDto getAllByType(ProductCategory category, Pageable customPageable) {
         if (customPageable.page() == null || customPageable.size() == null) {
             List<Product> products = storeRepository.getAllByProductCategory(category);

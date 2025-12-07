@@ -13,3 +13,31 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres?currentSchema=cart_schema
     username: postgres
     password: 12345
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+        alphanumeric-ids:
+          enabled: true
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        minimumNumberOfCalls: 5
+        slidingWindowSize: 20
+        failureRateThreshold: 50
+        waitDurationInOpenState: 6000
+        slidingWindowType: COUNT_BASED
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        ignore-exceptions:
+          - feign.FeignException$BadRequest
+          - feign.FeignException$Forbidden
+          - feign.FeignException$NotFound
+          - feign.FeignException$Conflict

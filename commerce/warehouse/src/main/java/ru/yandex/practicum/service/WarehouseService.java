@@ -9,7 +9,7 @@ import ru.yandex.practicum.dto.warehouse.ShoppingCartDto;
 public interface WarehouseService {
     void addProduct(NewProductInWarehouseRequest newProductInWarehouseRequest);
 
-    BookedProductsDto sufficiencyCheck(ShoppingCartDto shoppingCartDto);
+    BookedProductsDto checkProductQuantityEnoughForShoppingCart(ShoppingCartDto shoppingCartDto);
 
     void addProductToWarehouse(ProductQuantityDto productQuantityDto);
 

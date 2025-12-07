@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class WarehouseServiceImpl implements WarehouseService {
     private final ProductRepository productRepository;
     private static final String[] ADDRESSES = new String[]{"ADDRESS_1", "ADDRESS_2"};
@@ -45,7 +44,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public BookedProductsDto sufficiencyCheck(ShoppingCartDto shoppingCartDto) {
+    public BookedProductsDto checkProductQuantityEnoughForShoppingCart(ShoppingCartDto shoppingCartDto) {
         Map<String, Long> productsInCars = shoppingCartDto.products();
         List<Product> productList = productRepository.findAllById(productsInCars.keySet());
 

@@ -1,7 +1,10 @@
-package ru.yandex.practicum.api;
+package ru.yandex.practicum.contract.cart;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,13 +22,15 @@ public interface ShoppingCart {
     ShoppingCartDto getShoppingCart(@RequestParam @NotNull String username);
 
     @PutMapping()
-    ShoppingCartDto addProductToCart(@RequestParam @NotNull String username, @RequestBody Map<String, Long> productList);
+    ShoppingCartDto addProductToCart(@RequestParam @NotNull String username,
+                                     @RequestBody @NotEmpty Map<@NotBlank String, @Positive Long> productList);
 
     @DeleteMapping()
     String deleteShoppingCart(@RequestParam @NotNull String username);
 
     @PostMapping("/remove")
-    ShoppingCartDto removeProductsFromCart(@RequestParam @NotNull String username, @RequestBody List<String> productId);
+    ShoppingCartDto removeProductsFromCart(@RequestParam @NotNull String username,
+                                           @RequestBody @NotEmpty List<@NotBlank String> productId);
 
     @PostMapping("/change-quantity")
     ShoppingCartDto changeProductsFromCart(@RequestParam @NotNull String username,
