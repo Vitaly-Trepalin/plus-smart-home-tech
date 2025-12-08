@@ -1,0 +1,9 @@
+collector:
+  kafka:
+    bootstrap-server: localhost:9092
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: ru.yandex.practicum.serializer.CollectorSerializer
+
+grpc:
+  server:
+    port: 59091
